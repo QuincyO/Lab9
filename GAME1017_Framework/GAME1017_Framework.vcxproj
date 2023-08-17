@@ -198,6 +198,7 @@
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="TiledLevel.h" />
     <ClInclude Include="TreeNode.h" />
+    <ClInclude Include="Waypoint.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Assets\img\Maga.png" />

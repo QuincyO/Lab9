@@ -187,7 +187,7 @@ void GameState::Enter()
 	// Add Player back in for LOS Lab. first: String, second: GameObject*
 	AddChild("player", new Player({ 0,256,128,128 }, { 16 * 32.0f, 12 * 32.0f, 32.0f, 32.0f },
 		GetChild<TiledLevel*>("level")));
-	AddChild("enemy", new Enemy({ 0,256,128,128 }, { 28 * 32.0f, 6 * 32.0f, 32.0f, 32.0f },
+	AddChild("enemy", new Enemy({ 0,256,128,128 }, { 2 * 32.0f, 6 * 32.0f, 32.0f, 32.0f },
 		GetChild<TiledLevel*>("level")));
 	AddChild("menu", new Label("ltype14", 35.0f, 7.0f, "MENU: Mouse1/WADS: Move Player | T: Toggle Patrol/MoveToPlayer", { 255,255,255,255 }));
 

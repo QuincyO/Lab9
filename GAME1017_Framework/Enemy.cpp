@@ -81,9 +81,18 @@ void Enemy::Patrol()
 	if (GetActionState() != ActionState::PATROL_STATE)
 	{
 		SetActionState(ActionState::PATROL_STATE);
+		delete m_pTarget;
+		m_pTarget = new SDL_FPoint({
+			m_livePatrol[m_patrolPoint]->x,
+			m_livePatrol[m_patrolPoint]->y
+			});
+		StartMove();
+
 		// Set the target to the patrol point using the patrol index.
 		// Invoke StartMove().
 	}
+	MoveToTarget();
+	CheckNextWaypoint();
 	// Invoke MoveToTarget().
 	// Invoke CheckNextWaypoint().
 }
@@ -181,12 +190,29 @@ void Enemy::MoveToTarget()
 void Enemy::CheckNextWaypoint()
 {
 	// Create a temporary SDL_FPoint that is the center of the enemy.
-	
+	SDL_FPoint tempCenter = GetCenter();
+
+	float distanceToTarget = MAMA::Distance(&tempCenter, m_pTarget);
+	if (distanceToTarget < 16.0f)
+	{
+		m_patrolPoint++;
+		if (m_patrolPoint == (int)m_livePatrol.size())
+		{
+			m_patrolPoint = 0;
+		}
+		m_pTarget = new SDL_FPoint({
+			m_livePatrol[m_patrolPoint]->x,
+			m_livePatrol[m_patrolPoint]->y
+			});
+		if (m_pTarget->x < GetCenter().x) m_dir = 1;
+		else m_dir = 0;
+	}
 	// If distance to target is less than 16
 		// Increment patrolPoint
 		// If patrolPoint is at the end, reset to 0
 		// Set the target to the patrol point using the index
 		// Set the direction to the target
+	
 }
 
 void Enemy::CheckForArrival()
@@ -212,6 +238,17 @@ void Enemy::CheckForArrival()
 void Enemy::CreatePatrol()
 {
 	// Add the points to the m_patrol vector.
+	m_mainPatrol.reserve(4);
+	m_mainPatrol.push_back(new Waypoint(2 * 32.0f + 16, 2 * 32.0f + 16, WaypointType::WP_MAIN));
+	m_mainPatrol.push_back(new Waypoint(28 * 32.0f + 16, 2 * 32.0f + 16, WaypointType::WP_MAIN));
+	m_mainPatrol.push_back(new Waypoint(28 * 32.0f + 16, 22 * 32.0f + 16, WaypointType::WP_MAIN));
+	m_mainPatrol.push_back(new Waypoint(2 * 32.0f + 16, 22 * 32.0f + 16, WaypointType::WP_LAST));
+	m_livePatrol.reserve(4);
+	for (auto wp : m_mainPatrol)
+	{
+		m_livePatrol.push_back(wp);
+	}
+	m_patrolPoint = 0;
 	
 	// Set patrolPoint index to 0.
 }
@@ -223,13 +260,14 @@ void Enemy::CreatePath()
 	//Create temp fields for enenym and player GameObjects
 	GameObject* e = STMA::CurrentState()->GetChild("enemy");
 	GameObject* p = STMA::CurrentState()->GetChild("player");
-	PAMA::GetShortestPath(level[(int)(e->GetCenter().y/32)][(int)(e->GetCenter().x/32)]->Node(), level[(int)(p->GetCenter().y / 32)][(int)(p->GetCenter().x / 32)]->Node());
 	for (auto pt : m_moveToPath) //clear out old pathpoints
 	{
 		delete pt;
 		pt = nullptr;
 
 	}
+	PAMA::GetShortestPath(level[(int)(e->GetCenter().y/32)][(int)(e->GetCenter().x/32)]->Node(), level[(int)(p->GetCenter().y / 32)][(int)(p->GetCenter().x / 32)]->Node());
+	m_pathPoint = 0;
 	m_moveToPath.clear();
 	m_moveToPath.shrink_to_fit();
 	//Now create the movetopath from the smooth path of connections
@@ -247,7 +285,6 @@ void Enemy::CreatePath()
 			p->GetCenter()
 			}));
 	}
-	m_pathPoint = 0;
 	m_pTarget = m_moveToPath[m_pathPoint];
 	if (m_state != AnimState::STATE_RUNNING)
 	{

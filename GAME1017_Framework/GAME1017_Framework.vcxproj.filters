@@ -192,6 +192,7 @@
     <ClInclude Include="PathManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Waypoint.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Assets\img\Maga.png">

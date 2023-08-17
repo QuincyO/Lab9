@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "TiledLevel.h" // Could forward declare but TiledLevel.h doesn't include Enemy.h
 #include "ActionNode.h" // ActionState in here.
+#include "Waypoint.h"
 
 class DecisionTree; // Forward declaration.
 
@@ -39,6 +40,11 @@ private:
 	void CreatePatrol(); // Patrol creation utility.
 	std::vector<SDL_FPoint> m_patrol;
 	int m_patrolPoint; //Index of current patrol point
+
+	std::vector<Waypoint*> m_mainPatrol;
+	std::vector<Waypoint*> m_livePatrol;
+
+
 	// For pathfinding.
 	int m_pathCtr, m_pathMax, m_pathPoint; //Pathpoint is index of current path point
 	std::vector<SDL_FPoint*> m_moveToPath; //Path of FPoint nodes.
